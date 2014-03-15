@@ -1,0 +1,39 @@
+function[y] = edge_sobel(inputImage)
+
+% convert it into double type
+inputImage = double(inputImage);
+% get the dimensional information
+height = size(inputImage, 1);
+width = size(inputImage, 2);
+channel = size(inputImage, 3);
+% output image
+outputImage = zeros(size(inputImage));
+% kernels
+Gx = [1 2 1; 0 0 0; -1 -2 -1];
+Gy = [1 0 -1; 2 0 -2; 1 0 -1];
+
+% compute for every pixel
+for i = 2 : height - 1
+   for j = 2 : height - 1
+       for k = 1 : channel
+           tempImage = inputImage(i - 1 : i + 1, j - 1 : j + 1, k);
+           x = sum(sum(Gx .* tempImage)); 
+           y = sum(sum(Gy .* tempImage));
+           pixValue = sqrt(x^2 + y^2);
+           outputImage(i, j, k) = pixValue;
+       end 
+   end
+end
+
+% display the processed image
+outputImage = uint8(outputImage);
+figure;
+imshow(outputImage);
+title('Sobel Edge Detection');
+% write the output to disk
+imwrite(outputImage, 'outputImage.jpg', 'jpg')
+
+% original image
+figure;
+imshow(uint8(inputImage));
+title('Original Image');

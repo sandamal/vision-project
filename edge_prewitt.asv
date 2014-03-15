@@ -1,0 +1,39 @@
+function [ outputImage ] = edge_prewitt( inputImage )
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+
+iPrewittX = [ -1 0 1;
+              -1 0 1;
+              -1 0 1];
+iPrewittY = [ 1  1  1;
+              0  0  0;
+             -1 -1 -1];
+         
+% convert it into double type
+inputImage = double(inputImage);
+% get the dimensional information
+height = size(inputImage, 1);
+width = size(inputImage, 2);
+channel = size(inputImage, 3);
+
+imgX = conv2(inputImage, iPrewittX);
+imgY = conv2(inputImage, iPrewittY);
+imgMagnitude = abs(imgX) + abs(imgY);
+
+iThreshold = max(max(imgMagnitude))*iThreshold;
+iSize = size(inputImage);
+for X = 1:iSize(1),
+    for Y = 1:iSize(2),
+        if imgMagnitude(X,Y) >= iThreshold;
+            imgMagnitude(X,Y) = 255;
+        else
+            imgMagnitude(X,Y) = 0;
+        end
+    end
+end
+disp('Prewitt edge detection.');
+imgProcessedImage = imgMagnitude;
+
+
+end
+
