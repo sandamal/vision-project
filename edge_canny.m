@@ -99,6 +99,7 @@ for u = 2 : r
 end
 
 outputImage = supimg;
+outputImage=uint8(outputImage);
 
 end
 

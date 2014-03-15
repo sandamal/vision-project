@@ -22,7 +22,7 @@ function varargout = test_image(varargin)
 
 % Edit the above text to modify the response to help test_image
 
-% Last Modified by GUIDE v2.5 27-Feb-2014 14:42:53
+% Last Modified by GUIDE v2.5 15-Mar-2014 18:47:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -92,6 +92,7 @@ end
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 originalImage = imread(pathname);
 
@@ -112,6 +113,7 @@ global originalImage modifiedImage;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 modifiedImage = originalImage;
 axes(handles.modifiedAxes);
@@ -141,6 +143,7 @@ global originalImage modifiedImage;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 modifiedImage = rgb2gray(originalImage);
 axes(handles.modifiedAxes);
@@ -156,6 +159,7 @@ global originalImage modifiedImage;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 modifiedImage = 255-originalImage;
 axes(handles.modifiedAxes);
@@ -171,6 +175,7 @@ global modifiedImage;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 modifiedImage = imrotate(modifiedImage,-90);
 axes(handles.modifiedAxes);
@@ -186,6 +191,7 @@ global modifiedImage;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 modifiedImage = imrotate(modifiedImage,90);
 axes(handles.modifiedAxes);
@@ -201,6 +207,7 @@ global modifiedImage;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideDropDown(handles);
 
 modifiedImage = flipdim(modifiedImage,2);      %# Flips the columns, making a mirror image
 axes(handles.modifiedAxes);
@@ -315,20 +322,23 @@ set(handles.text_max_thresh,'String', num2str(sliderValue));
 canny_edge_threshold(modifiedImage,handles)
 
 % --------------------------------------------------------------------
-function edge_sobel_threshold(modifiedImage,thresh,handles)
-%Define a threshold value
-edgeImage = max(modifiedImage,thresh);
-edgeImage(edgeImage==round(thresh))= 0;
-
-edgeImage = uint8(edgeImage);
-axes(handles.modifiedAxes);
-imshow(edgeImage);
+% function edge_sobel_threshold(modifiedImage,thresh,handles)
+% %Define a threshold value
+% edgeImage = max(modifiedImage,thresh);
+% edgeImage(edgeImage==round(thresh))= 0;
+% 
+% edgeImage = uint8(edgeImage);
+% axes(handles.modifiedAxes);
+% imshow(edgeImage);
 
 
 % --------------------------------------------------------------------
 function edge_threshold(modifiedImage,thresh,handles)
 %Define a threshold value
+modifiedImage = uint8(modifiedImage);
 edgeImage = modifiedImage;
+
+
 iSize = size(modifiedImage);
 for X = 1:iSize(1),
     for Y = 1:iSize(2),
@@ -339,7 +349,7 @@ for X = 1:iSize(1),
         end
     end
 end
-edgeImage = uint8(edgeImage);
+
 axes(handles.modifiedAxes);
 imshow(edgeImage);
 
@@ -374,7 +384,7 @@ for u = 2 : r-1
     end
 end
 
-edgeImage = uint8(resimg);
+edgeImage = resimg;
 axes(handles.modifiedAxes);
 imshow(edgeImage);
 
@@ -402,6 +412,7 @@ global originalImage modifiedImage isThreshSliderVisible;
 thresh = 100;
 
 hideCannySliders(handles);
+hideDropDown(handles);
 
 if (isThreshSliderVisible == false)
     set(handles.slider_thresh_1, 'visible','on');
@@ -429,6 +440,7 @@ global originalImage modifiedImage isThreshSliderVisible;
 thresh = 100;
 
 hideCannySliders(handles);
+hideDropDown(handles);
 
 if (isThreshSliderVisible == false)
     set(handles.slider_thresh_1, 'visible','on');
@@ -456,6 +468,7 @@ global originalImage modifiedImage isThreshSliderVisible;
 thresh = 100;
 
 hideCannySliders(handles);
+hideDropDown(handles);
 
 if (isThreshSliderVisible == false)
     set(handles.slider_thresh_1, 'visible','on');
@@ -483,6 +496,7 @@ threshMax = 100;
 threshMin = 95;
 
 hideSliders(handles);
+hideDropDown(handles);
 
 if (isCannySlidersVisible == false)
     set(handles.canny_panel, 'visible','on');
@@ -496,3 +510,66 @@ set(handles.text_min_thresh, 'String',threshMin);
 modifiedImage = rgb2gray(originalImage);
 modifiedImage = edge_canny(modifiedImage);
 canny_edge_threshold(modifiedImage,handles);
+
+
+% --- Executes on selection change in filter_size.
+function filter_size_Callback(hObject, eventdata, handles)
+% hObject    handle to filter_size (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns filter_size contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from filter_size
+val = get(hObject,'Value');
+value = val+2;
+image_filter(value,handles);
+
+% --- Executes during object creation, after setting all properties.
+function filter_size_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to filter_size (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --------------------------------------------------------------------
+function filter_median_Callback(hObject, eventdata, handles)
+% hObject    handle to filter_median (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global filterType;
+filterType  = 'median';
+set(handles.filter_size,'Value',1);
+image_filter(3,handles);
+
+% --------------------------------------------------------------------
+function image_filter(size,handles)
+
+global filterType isDropDownVisible originalImage modifiedImage;
+
+hideSliders(handles);
+hideCannySliders(handles);
+
+if (isDropDownVisible == false)
+    set(handles.filter_size, 'visible','on');
+    isDropDownVisible = true;
+end
+
+switch filterType
+case 'median' % User selects median.
+    modifiedImage = filter_median(originalImage,size);
+end
+axes(handles.modifiedAxes);
+imshow(modifiedImage);
+
+
+% --------------------------------------------------------------------
+function hideDropDown(handles)
+global isDropDownVisible;
+isDropDownVisible = false;
+set(handles.filter_size, 'visible','off');
