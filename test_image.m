@@ -22,7 +22,7 @@ function varargout = test_image(varargin)
 
 % Edit the above text to modify the response to help test_image
 
-% Last Modified by GUIDE v2.5 15-Mar-2014 18:47:36
+% Last Modified by GUIDE v2.5 16-Mar-2014 15:53:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -83,7 +83,7 @@ function selectImageButton_Callback(hObject, eventdata, handles)
 %fullpathname = strcat(pathname,filename);
 %image = fileread(fullpathname);
 
-global originalImage;
+global originalImage imageInfo;
 
 [pathname, userCanceled] = imgetfile;
 if userCanceled
@@ -95,7 +95,7 @@ hideCannySliders(handles);
 hideDropDown(handles);
 
 originalImage = imread(pathname);
-
+imageInfo = imfinfo(pathname);
 modifiedImage = originalImage;
 
 axes(handles.originalAxes);
@@ -342,9 +342,7 @@ edgeImage = modifiedImage;
 iSize = size(modifiedImage);
 for X = 1:iSize(1),
     for Y = 1:iSize(2),
-        if modifiedImage(X,Y) >= thresh;
-            edgeImage(X,Y) = 255;
-        else
+        if modifiedImage(X,Y) < thresh;
             edgeImage(X,Y) = 0;
         end
     end
@@ -520,8 +518,11 @@ function filter_size_Callback(hObject, eventdata, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns filter_size contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from filter_size
-val = get(hObject,'Value');
-value = val+2;
+%val = get(hObject,'Value');
+%value = val+2;
+contents = cellstr(get(hObject,'String'));
+val = contents{get(hObject,'Value')};
+value = str2num(val);
 image_filter(value,handles);
 
 % --- Executes during object creation, after setting all properties.
@@ -536,6 +537,40 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
+% --------------------------------------------------------------------
+function image_filter(size,handles)
+
+global filterType isDropDownVisible originalImage modifiedImage imageInfo;
+
+hideSliders(handles);
+hideCannySliders(handles);
+
+if (isDropDownVisible == false)
+    set(handles.filter_size, 'visible','on');
+    isDropDownVisible = true;
+end
+
+switch filterType
+case 'median' % User selects median.
+    modifiedImage = filter_median(originalImage,size,imageInfo.ColorType);
+case 'mean' % User selects mean.
+    modifiedImage = filter_mean(originalImage,size,imageInfo.ColorType);
+case 'min' % User selects min.
+    modifiedImage = filter_min(originalImage,size,imageInfo.ColorType);
+case 'max' % User selects max.
+    modifiedImage = filter_max(originalImage,size,imageInfo.ColorType);
+case 'alpha' % User selects max.
+    modifiedImage = filter_alpha_trimmed_mean(originalImage,size,imageInfo.ColorType);
+end
+axes(handles.modifiedAxes);
+imshow(modifiedImage);
+
+
+% --------------------------------------------------------------------
+function hideDropDown(handles)
+global isDropDownVisible;
+isDropDownVisible = false;
+set(handles.filter_size, 'visible','off');
 
 % --------------------------------------------------------------------
 function filter_median_Callback(hObject, eventdata, handles)
@@ -548,28 +583,44 @@ set(handles.filter_size,'Value',1);
 image_filter(3,handles);
 
 % --------------------------------------------------------------------
-function image_filter(size,handles)
-
-global filterType isDropDownVisible originalImage modifiedImage;
-
-hideSliders(handles);
-hideCannySliders(handles);
-
-if (isDropDownVisible == false)
-    set(handles.filter_size, 'visible','on');
-    isDropDownVisible = true;
-end
-
-switch filterType
-case 'median' % User selects median.
-    modifiedImage = filter_median(originalImage,size);
-end
-axes(handles.modifiedAxes);
-imshow(modifiedImage);
+function filter_mean_Callback(hObject, eventdata, handles)
+% hObject    handle to filter_mean (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global filterType;
+filterType  = 'mean';
+set(handles.filter_size,'Value',1);
+image_filter(3,handles);
 
 
 % --------------------------------------------------------------------
-function hideDropDown(handles)
-global isDropDownVisible;
-isDropDownVisible = false;
-set(handles.filter_size, 'visible','off');
+function filter_min_Callback(hObject, eventdata, handles)
+% hObject    handle to filter_min (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global filterType;
+filterType  = 'min';
+set(handles.filter_size,'Value',1);
+image_filter(3,handles);
+
+
+% --------------------------------------------------------------------
+function filter_max_Callback(hObject, eventdata, handles)
+% hObject    handle to filter_max (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global filterType;
+filterType  = 'max';
+set(handles.filter_size,'Value',1);
+image_filter(3,handles);
+
+
+% --------------------------------------------------------------------
+function filter_alpha_Callback(hObject, eventdata, handles)
+% hObject    handle to filter_alpha (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global filterType;
+filterType  = 'alpha';
+set(handles.filter_size,'Value',1);
+image_filter(3,handles);

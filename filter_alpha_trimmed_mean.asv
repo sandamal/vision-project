@@ -1,0 +1,28 @@
+function outputImage = filter_alpha_trimmed_mean(inputImage,mask)
+
+d=2;
+inputImage = rgb2gray(inputImage);
+inputImage=im2double(inputImage);
+
+% Specifications of the filter
+d=4;
+figure,imshow(data)
+[ro col]=size(data);
+temp1=[];
+graber=0;
+akkumulator=[];
+
+f = ordfilt2(inputImage,1,ones(mask,mask),'symmetric');
+
+for k = 1:d/2
+    f = imsubtract(f,ordfilt2(inputImage,k,ones(mask,mask),'symmetric'));
+end
+for k = (mask*mask + (d/2) + 1):mask*mask
+    f = imsubtract(f,ordfilt2(inputImage,k,ones(mask,mask),'symmetric'));
+end
+f = f/(mask*mask - d);
+%outputImage = changeclass(inclass,f);
+
+%CONVERT THE OUTPUT MATRIX TO 0-255 RANGE IMAGE TYPE
+outputImage=uint8(f);
+end

@@ -11,13 +11,13 @@ if strcmp(colorType,'truecolor')
     greenChannel = inputImage(:,:,2);
     blueChannel = inputImage(:,:,3);
     
-    redOutput = zeros(size(redChannel));
-    greenOutput = zeros(size(greenChannel));
-    blueOutput = zeros(size(blueChannel));
+    redOutput = zeros(size(inputImage));
+    greenOutput = zeros(size(inputImage));
+    blueOutput = zeros(size(inputImage));
     
     %For the red channel---------------------------------------------------
     
-    modifiedRed = zeros(size(redChannel)+padding*2);
+    modifiedRed = zeros(size(inputImage)+padding*2);
     
     %COPY THE ORIGINAL RED IMAGE MATRIX TO THE PADDED MATRIX
     for x=1:size(redChannel,1)
@@ -43,7 +43,7 @@ if strcmp(colorType,'truecolor')
     
     %For the green channel------------------------------------------------
     
-    modifiedGreen = zeros(size(greenChannel)+padding*2);
+    modifiedGreen = zeros(size(inputImage)+padding*2);
     
     %COPY THE ORIGINAL GREEN IMAGE MATRIX TO THE PADDED MATRIX
     for x=1:size(greenChannel,1)
@@ -69,7 +69,7 @@ if strcmp(colorType,'truecolor')
     
     %For the blue channel------------------------------------------------
     
-    modifiedBlue = zeros(size(blueChannel)+padding*2);
+    modifiedBlue = zeros(size(inputImage)+padding*2);
     
     %COPY THE ORIGINAL BLUE IMAGE MATRIX TO THE PADDED MATRIX
     for x=1:size(blueChannel,1)
@@ -95,6 +95,10 @@ if strcmp(colorType,'truecolor')
     
     %Combine the three channels
     outputImage = cat(3, redOutput, greenOutput, blueOutput);
+    
+    [rows columns numberOfColorChannels] = size(I);
+image3D = cat(3, I, zeros(rows, columns));
+imshow(uint8(image3D));  
     
     % ---------------------------------------------------------------------
     % ---------------------------------------------------------------------

@@ -1,4 +1,4 @@
-function outputImage = filter_median(inputImage,mask,colorType)
+function outputImage = filter_min(inputImage,mask,colorType)
 
 %PAD THE MATRIX WITH ZEROS ON ALL SIDES
 padding = floor(mask/2);
@@ -36,8 +36,8 @@ if strcmp(colorType,'truecolor')
                     inc=inc+1;
                 end
             end
-            %PLACE THE MEDIAN ELEMENT IN THE OUTPUT MATRIX
-            redOutput(i,j)=median(window);
+            %PLACE THE MIN ELEMENT IN THE OUTPUT MATRIX
+            redOutput(i,j)=min(window);
         end
     end
     
@@ -62,8 +62,8 @@ if strcmp(colorType,'truecolor')
                     inc=inc+1;
                 end
             end
-            %PLACE THE MEDIAN ELEMENT IN THE OUTPUT MATRIX
-            greenOutput(i,j)=median(window);
+            %PLACE THE MIN ELEMENT IN THE OUTPUT MATRIX
+            greenOutput(i,j)=min(window);
         end
     end
     
@@ -88,8 +88,8 @@ if strcmp(colorType,'truecolor')
                     inc=inc+1;
                 end
             end
-            %PLACE THE MEDIAN ELEMENT IN THE OUTPUT MATRIX
-            blueOutput(i,j)=median(window);
+            %PLACE THE MIN ELEMENT IN THE OUTPUT MATRIX
+            blueOutput(i,j)=min(window);
         end
     end
     
@@ -126,8 +126,8 @@ else
                 end
             end
             
-            %PLACE THE MEDIAN ELEMENT IN THE OUTPUT MATRIX
-            outputImage(i,j)=median(window);
+            %PLACE THE MIN ELEMENT IN THE OUTPUT MATRIX
+            outputImage(i,j)=min(window);
             
         end
     end
