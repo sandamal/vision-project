@@ -22,7 +22,7 @@ function varargout = test_image(varargin)
 
 % Edit the above text to modify the response to help test_image
 
-% Last Modified by GUIDE v2.5 16-Mar-2014 15:53:52
+% Last Modified by GUIDE v2.5 16-Mar-2014 22:20:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -93,6 +93,7 @@ end
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 originalImage = imread(pathname);
 imageInfo = imfinfo(pathname);
@@ -114,6 +115,7 @@ global originalImage modifiedImage;
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 modifiedImage = originalImage;
 axes(handles.modifiedAxes);
@@ -144,6 +146,7 @@ global originalImage modifiedImage;
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 modifiedImage = rgb2gray(originalImage);
 axes(handles.modifiedAxes);
@@ -160,6 +163,7 @@ global originalImage modifiedImage;
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 modifiedImage = 255-originalImage;
 axes(handles.modifiedAxes);
@@ -176,6 +180,7 @@ global modifiedImage;
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 modifiedImage = imrotate(modifiedImage,-90);
 axes(handles.modifiedAxes);
@@ -192,6 +197,7 @@ global modifiedImage;
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 modifiedImage = imrotate(modifiedImage,90);
 axes(handles.modifiedAxes);
@@ -208,6 +214,7 @@ global modifiedImage;
 hideSliders(handles);
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 modifiedImage = flipdim(modifiedImage,2);      %# Flips the columns, making a mirror image
 axes(handles.modifiedAxes);
@@ -400,6 +407,11 @@ global isCannySlidersVisible;
 isCannySlidersVisible = false;
 set(handles.canny_panel, 'visible','off');
 
+% --------------------------------------------------------------------
+function hideCompareButtons(handles)
+global isCompareButtonsVisible;
+isCompareButtonsVisible = false;
+set(handles.compare_panel, 'visible','off');
 
 % --------------------------------------------------------------------
 function edge_sobel_Callback(hObject, eventdata, handles)
@@ -411,6 +423,7 @@ thresh = 100;
 
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 if (isThreshSliderVisible == false)
     set(handles.slider_thresh_1, 'visible','on');
@@ -439,6 +452,7 @@ thresh = 100;
 
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 if (isThreshSliderVisible == false)
     set(handles.slider_thresh_1, 'visible','on');
@@ -467,6 +481,7 @@ thresh = 100;
 
 hideCannySliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 if (isThreshSliderVisible == false)
     set(handles.slider_thresh_1, 'visible','on');
@@ -495,6 +510,7 @@ threshMin = 95;
 
 hideSliders(handles);
 hideDropDown(handles);
+hideCompareButtons(handles);
 
 if (isCannySlidersVisible == false)
     set(handles.canny_panel, 'visible','on');
@@ -544,6 +560,7 @@ global filterType isDropDownVisible originalImage modifiedImage imageInfo;
 
 hideSliders(handles);
 hideCannySliders(handles);
+hideCompareButtons(handles);
 
 if (isDropDownVisible == false)
     set(handles.filter_size, 'visible','on');
@@ -624,3 +641,79 @@ global filterType;
 filterType  = 'alpha';
 set(handles.filter_size,'Value',1);
 image_filter(3,handles);
+
+
+% --------------------------------------------------------------------
+function bo_histogram_Callback(hObject, eventdata, handles)
+% hObject    handle to bo_histogram (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global originalImage;
+
+hideSliders(handles);
+hideCannySliders(handles);
+hideDropDown(handles);
+hideCompareButtons(handles);
+
+get_histogram(originalImage);
+
+
+% --- Executes on button press in select_2_image.
+function select_2_image_Callback(hObject, eventdata, handles)
+% hObject    handle to select_2_image (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global secondImage imageInfo;
+
+[pathname, userCanceled] = imgetfile;
+if userCanceled
+    return;
+end
+
+hideSliders(handles);
+hideCannySliders(handles);
+hideDropDown(handles);
+
+secondImage = imread(pathname);
+imageInfo = imfinfo(pathname);
+
+axes(handles.modifiedAxes);
+imshow(secondImage);
+
+
+% --- Executes on button press in calculateButton.
+function calculateButton_Callback(hObject, eventdata, handles)
+% hObject    handle to calculateButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global originalImage secondImage;
+compare_images(originalImage,secondImage);
+
+% --------------------------------------------------------------------
+function bo_compare_Callback(hObject, eventdata, handles)
+% hObject    handle to bo_compare (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global isCompareButtonsVisible
+
+if (isCompareButtonsVisible == false)
+    set(handles.compare_panel, 'visible','on');
+    isCompareButtonsVisible = true;
+end
+
+hideSliders(handles);
+hideDropDown(handles);
+hideCannySliders(handles);
+
+
+% --- Executes on button press in save_button.
+function save_button_Callback(hObject, eventdata, handles)
+% hObject    handle to save_button (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global modifiedImage;
+axes(handles.modifiedAxes);
+[filename, user_canceled] = imsave;
+if user_canceled
+    return;
+end

@@ -1,0 +1,28 @@
+function outputImage = compare_images(firstImage,secondImage,handles)
+
+outputImage(i,j,:) =max(firstImage(i,j,:)-secondImage(i,j,:),0);
+
+
+secondImage=imresize(secondImage,[size(firstImage,1) size(firstImage,2)]);
+
+firstImage=uint8(firstImage);
+secondImage=uint8(secondImage);
+
+[x,y]=find((tempFirstImage(:,:,1)+tempFirstImage(:,:,2)+tempFirstImage(:,:,3))>650);
+
+for i=1:size(x,1)
+    C(x(i),y(i),:)=1;
+    F(x(i),y(i),:)=0;
+end
+
+
+
+C=C.*secondImage;
+
+
+C=C+F;
+imshow(C);
+
+%CONVERT THE OUTPUT MATRIX TO 0-255 RANGE IMAGE TYPE
+outputImage=uint8(outputImage);
+end
